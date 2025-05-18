@@ -1,14 +1,14 @@
-import "./components/css/pages/pages.css"
-import PageTitle from "./components/page/PageTitle"
-import BusinessDisplay from "./components/page/BusinessDisplay"
-import AddBusinessDisplay from "./components/page/AddBusinessDisplay"
+import "../components/css/pages/pages.css"
+import PageTitle from "../components/utils/PageTitle"
+import BusinessDisplay from "../components/utils/BusinessDisplay"
+import AddBusinessDisplay from "../components/utils/AddBusinessDisplay"
 
 function Business() {
   return (
     <div className='w-full h-full flex'>
       <div className='mainDiv'>
         <div className="mainInsideDiv">
-          <PageTitle title="Empresas"/>
+          <PageTitle title="Sua empresa"/>
           <div className="flex flex-row w-full gap-2">
             <BusinessDisplay title={"Empresa"}/>
             <AddBusinessDisplay />

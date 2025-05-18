@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .mainInsideDiv {
-    @apply w-full flex flex-col items-center h-auto pl-4 bg-zinc-100 rounded text-white border-2;
+    @apply w-full flex flex-col items-center h-auto p-10 bg-white rounded text-white;
 }
 
 .mainDiv {

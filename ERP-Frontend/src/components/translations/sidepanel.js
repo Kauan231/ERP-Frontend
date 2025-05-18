@@ -1,5 +1,3 @@
-import { href } from "react-router-dom";
-
 export const sidebarDictionary = {
     title: {
         Portuguese: "Gestão",
@@ -12,19 +10,14 @@ export const sidebarDictionary = {
             English: "Dashboard"
         },
         {
-            href: "/companies",
-            Portuguese: "Empresas",
-            English: "Companies"
-        },
-        {
             href: "/customers",
             Portuguese: "Clientes",
             English: "Customers"
         },
         {
-            href: "/products",
-            Portuguese: "Produtos",
-            English: "Products"
+            href: "/inventories",
+            Portuguese: "Inventarios",
+            English: "Inventories"
         },
         {
             href: "/orders",

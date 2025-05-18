@@ -1,26 +1,36 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-import './index.css'
-import Business from './Business.jsx'
-import Sidepanel from './components/Sidepanel.jsx'
+import Login from "./pages/Login";
+import Sidepanel from './components/sidepanel/Sidepanel.jsx';
+import Business from './pages/Business.jsx';
+import Inventory from "./pages/Inventory.jsx";
 
-function App() {
+export default function App() {
   return (
-    <div className='bg-gray w-screen h-screen flex'>
-      <div className='w-64 h-full flex'>
-          <Sidepanel />
-      </div>
-      <div className='bg-gray w-full h-full'>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/companies" element={<Business />} />
-          </Routes>
-        </BrowserRouter>
-      </div>
-    </div>
-
-  )
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <div className="flex h-screen w-screen">
+                <Sidepanel />
+                <Business />
+              </div>
+            </ProtectedRoute>
+          } />
+          <Route path="/inventories" element={
+            <ProtectedRoute>
+              <div className="flex h-screen w-screen">
+                <Sidepanel />
+                <Inventory />
+              </div>
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
-
-export default App

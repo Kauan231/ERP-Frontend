@@ -1,5 +1,5 @@
 import { useState } from "react"
-import AddNewItem from "../utils/AddNewItem";
+import ModalWithInputs from "../utils/ModalWithInputs";
 
 function AddBusinessDisplay({title}) {
   const [businessWindowOpen, setBusinessWindowOpen] = useState(false);
@@ -15,13 +15,14 @@ function AddBusinessDisplay({title}) {
       </div>
       {
         businessWindowOpen &&
-        <AddNewItem
+        <ModalWithInputs
           onClose={() => setBusinessWindowOpen(false)}
           content={{
             title:"Adicionar empresa",
             inputs:[
               {
-                inputName: "Nome"
+                name: "Name",
+                type: "normal"
               }
             ]
           }}

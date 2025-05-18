@@ -1,6 +1,4 @@
-import { useState } from 'react';
-
-function AddBusinessWindow({ content, onClose }) {
+function AddNewItemModal({ content, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-[9999]">
       <div className="w-96 p-6 bg-white rounded-lg shadow-lg relative">
@@ -36,4 +34,4 @@ function AddBusinessWindow({ content, onClose }) {
   );
 }
 
-export default AddBusinessWindow;
+export default AddNewItemModal;

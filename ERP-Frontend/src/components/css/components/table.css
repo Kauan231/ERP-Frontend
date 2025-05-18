@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Layout geral da tabela */
+.Table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+/* Container que permite scroll do corpo da tabela */
+.TableRowContainer {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+
+    max-height: 42vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.TableRowContainer::-webkit-scrollbar {
+    display: none;
+}
+
+/* Cabeçalho da tabela */
+.Table thead th {
+    @apply text-gray-400 text-left font-bold h-[2vh] p-2 border-0;
+}
+
+/* Linhas da tabela */
+.TableRowContainer td {
+    @apply pt-4 pb-4 border-0 font-bold text-[.9rem];
+}
+
+/* Estilo de hover */
+.TableRowContainer tr:hover {
+    @apply bg-gray-200;
+}
+
+
+/* Responsivo para telas menores */
+@media (max-width: 640px) {
+.Table thead th,
+.TableRowContainer td {
+    font-size: 0.8rem;
+    padding: 10px;
+}
+
+.TableRowContainer {
+    max-height: 200px;
+}
+}

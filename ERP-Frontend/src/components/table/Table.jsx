@@ -4,28 +4,11 @@ import Placeholder from "../../assets/placeholder.svg";
 import HeaderFilter from "./headerFilter";
 import { table } from "../translations/table";
 
-export default function Table({ content, headers }) {
-  const [filteredContent, setFilteredContent] = useState(content);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [checkedItens, setCheckedItens] = useState({});
-  const itemsPerPage = 6;
+export default function Table({ content, headers, currentPage, setCurrentPage, totalPages}) {
 
-  useEffect(() => {
-    setFilteredContent(content);
-  }, [content]);
-
-  // Cálculo de conteúdo atual
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredContent.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredContent.length / itemsPerPage);
+  const checkedItems = headers.find(header => header.name == "Checkbox").checkedItems;
+  const setCheckedItems = headers.find(header => header.name == "Checkbox").setCheckedItems;
   const language = "Portuguese";
-
-  const handleFilterChange = (header, selected) => {
-    const updated = header.filterFromList(selected);
-    setFilteredContent(updated);
-    setCurrentPage(1); // Volta para a primeira página ao aplicar filtro
-  };
 
   const dataToElement = (data, key) => {
     if (data.type === "label") {
@@ -54,15 +37,15 @@ export default function Table({ content, headers }) {
     if (data.type === "checkbox") {
       return <input
       type="checkbox"
-      checked={checkedItens[data.id] || false}
+      checked={checkedItems[data.id] || false}
       onClick={() => {
-          let changedItems = checkedItens;
+          let changedItems = checkedItems;
           if(changedItems[data.id]) {
             delete changedItems[data.id]
           } else {
             changedItems[data.id] = true;
           }
-          setCheckedItens({...changedItems})
+          setCheckedItems({...changedItems})
           headers.find(header => header.name == "Checkbox").getCheckedItens(changedItems)
         }
       }
@@ -103,7 +86,8 @@ export default function Table({ content, headers }) {
           key={index}
           header={header}
           values={header.filters}
-          onFilterChange={(updated) => handleFilterChange(header, updated)}
+          selectedFilters={header.selectedFilters}
+          setSelectedFilters={header.setSelectedFilters}
         />
       );
     }
@@ -112,9 +96,9 @@ export default function Table({ content, headers }) {
   return (
     <div className="w-full">
 
-      {Object.keys(checkedItens).length > 0 && (
+      {Object.keys(checkedItems).length > 0 && (
         <div className="flex items-center bg-gray-100 justify-between pt-2 pb-2 pl-8 pr-8 rounded-full mb-2 text-black font-bold">
-          <span>{Object.keys(checkedItens).length} itens selecionados</span>
+          <span>{Object.keys(checkedItems).length} itens selecionados</span>
           <div className="flex gap-12 ">
             { headers.find(header => header.name == "Checkbox").actionButtons() }
           </div>
@@ -134,7 +118,7 @@ export default function Table({ content, headers }) {
       <div className="TableRowContainer overflow-y-auto max-h-[60vh] min-h-[42vh]">
         <table className="w-full table-fixed text-black border-collapse">
           <tbody>
-            {currentItems.map((row, rowIndex) => (
+            {content.map((row, rowIndex) => (
               <tr key={rowIndex} className="bg-white hover:bg-gray-200">
                 {headers.map((header, colIndex) => (
                   <td

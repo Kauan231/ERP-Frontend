@@ -7,17 +7,54 @@ import ModalWithInputs from "../components/utils/ModalWithInputs";
 import Placeholder from "../assets/placeholder.svg";
 
 function Inventory() {
-  const [transferWindowOpen, setTransferWindowOpen] = useState(false);
-  const [checkedItems, setCheckedItems] = useState({});
-  const [inventoriesToExclude, setInventoriesToExclude] = useState([]);
+  //Auth
   const { user, setUser } = useContext(AuthContext);
-  const [content, setContent] = useState([]);
+
+  //Manipulate items
   const [allInventories, setAllInventories] = useState([]);
+  const [inventoriesToExclude, setInventoriesToExclude] = useState([]);
+  const [checkedItems, setCheckedItems] = useState({});
+
+  //Transfer
   const [transferItems, setTransferItems] = useState();
   const [toInventory, setToInventory] = useState(undefined);
+  const [transferWindowOpen, setTransferWindowOpen] = useState(false);
+
+  //Pagination
+  const [content, setContent] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  //Filter items
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [limit, setLimit] = useState(7);
+  const [totalOfItems, setTotalOfItems] = useState(1);
+  const itemsPerPage = 7;
+
+  useEffect(() => {
+    if (user?.token) {
+      getTableData();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    getTableData();
+  }, [selectedFilters]);
+
+  useEffect(() => {
+    getTableData();
+  }, [selectedFilters, currentPage, limit]);
 
   async function getTableData() {
-    const res = await fetch("https://localhost:7011/Inventory/InventoryItem/ReadAll", {
+    const skip = (currentPage - 1) * limit;
+    let baseUrl = "https://localhost:7011/Inventory/InventoryItem/ReadAll";
+    let skipAndLimit = `skip=${skip}&limit=${limit}`
+    let filters = '?';
+    selectedFilters.forEach((filter) => {
+      filters +=  `inventoryIds=${filter.id}&`;
+    })
+    let resUrl = baseUrl + filters + skipAndLimit;
+
+    const res = await fetch(resUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -62,19 +99,16 @@ function Inventory() {
 
     setContent(contentToAdd);
     setAllInventories(result.allInventories.map(inv => ({ id: inv.id, text: inv.name })));
+    setTotalOfItems(result.totalOfItems);
   }
-
-  useEffect(() => {
-    if (user?.token) {
-      getTableData();
-    }
-  }, [user]);
 
   const headers = [
     {
       name: "Checkbox",
       size: "10%",
       type: "normal",
+      checkedItems: checkedItems,
+      setCheckedItems: setCheckedItems,
       actionButtons: () => (
         <>
           <button
@@ -82,6 +116,11 @@ function Inventory() {
             onClick={() => setTransferWindowOpen(true)}
           >
             Transferir
+          </button>
+          <button
+            className="border p-2 rounded-full bg-white hover:bg-gray-200"
+            onClick={() => { setCheckedItems({}); }}>
+            Desmarcar
           </button>
           <button className="border p-2 rounded-full bg-white hover:bg-gray-200">
             Remover
@@ -105,7 +144,9 @@ function Inventory() {
       name: "Inventory",
       size: "20%",
       type: "filter",
-      filters: [...new Set(content.map(c => c.Inventory.text))],
+      filters: allInventories,
+      selectedFilters: selectedFilters,
+      setSelectedFilters: setSelectedFilters,
       filterFromList: (filters) => {
         if (filters.length === 0) return content;
         return content.filter(content => filters.includes(content.Inventory.text));
@@ -116,7 +157,7 @@ function Inventory() {
   const Product = ({ product }) => {
     const [quantity, setQuantity] = useState(() => {
       const existing = transferItems?.[product.Checkbox.id]?.amount;
-      return typeof existing === "number" ? existing : 1;
+      return typeof existing === "number" ? existing : 0;
     });
 
     const updateTransferItem = (newQuantity) => {
@@ -230,6 +271,7 @@ function Inventory() {
     setTransferWindowOpen(false);
     setTransferItems(undefined);
     setToInventory(undefined);
+    setCheckedItems({});
     getTableData();
   };
 
@@ -243,6 +285,9 @@ function Inventory() {
               <Table
                 content={content}
                 headers={headers}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                totalPages={Math.ceil(totalOfItems / itemsPerPage)}
               />
             </div>
           </div>

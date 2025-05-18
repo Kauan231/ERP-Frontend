@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
-export default function HeaderFilter({ header, values = ["bla", "blu", "ble"], onFilterChange }) {
+export default function HeaderFilter({ header, values = [], selectedFilters, setSelectedFilters }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState([]);
   const ref = useRef();
 
   useEffect(() => {
@@ -20,12 +19,12 @@ export default function HeaderFilter({ header, values = ["bla", "blu", "ble"], o
   };
 
   const handleCheckboxChange = (value) => {
-    const updated = selected.includes(value)
-      ? selected.filter((v) => v !== value)
-      : [...selected, value];
+    let isInList = selectedFilters.findIndex(filter => filter.id == value.id);
+    const updated = isInList != -1
+      ? selectedFilters.filter((v) => v.id !== value.id)
+      : [...selectedFilters, value];
 
-    setSelected(updated);
-    onFilterChange && onFilterChange(updated);
+    setSelectedFilters(updated);
   };
 
   const sortedValues = [...new Set(values)].sort();
@@ -57,10 +56,10 @@ export default function HeaderFilter({ header, values = ["bla", "blu", "ble"], o
               <input
                 type="checkbox"
                 className="mr-2"
-                checked={selected.includes(value)}
+                checked={selectedFilters.map(filter => filter.id).includes(value.id)}
                 onChange={() => handleCheckboxChange(value)}
               />
-              <span className="truncate">{value}</span>
+              <span className="truncate">{value.text}</span>
             </label>
           ))}
         </div>

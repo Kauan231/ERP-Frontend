@@ -5,14 +5,19 @@ export default function ModalWithInputs({ content, onClose }) {
   const [selectedDropdown, setSelectedDropdown] = useState(null);
 
   const handleSave = () => {
-    // Atualiza o estado do pai com o valor do dropdown
     content.onSelectChange?.(selectedDropdown);
-
-    // Pega valores dos inputs custom (se quiser usar)
-    let values = refs.current.map(el => el?.value).filter(v => v !== undefined);
-
-    // Chama onButtonClick passando o valor atualizado do dropdown
-    content.onButtonClick?.(selectedDropdown);
+    let contentFromRefs = refs.current.map((ref, index) => {
+      return {
+        id: content.inputs[index]?.id,
+        type: content.inputs[index]?.type,
+        name: content.inputs[index]?.name,
+        value: ref.value
+      }
+    });
+    content.onButtonClick?.({
+      selectedDropdown,
+      refs: contentFromRefs
+    });
   };
 
   const dataToElement = (data, index) => {

@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { BusinessProvider } from "./context/BusinessContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
 import Sidepanel from './components/sidepanel/Sidepanel.jsx';
 import Business from './pages/Business.jsx';
 import Inventory from "./pages/Inventory.jsx";
+import Products from "./pages/Products.jsx";
 
 export default function App() {
   return (
@@ -27,6 +29,17 @@ export default function App() {
                 <Sidepanel />
                 <Inventory />
               </div>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/Products" element={
+            <ProtectedRoute>
+              <BusinessProvider>
+                <div className="flex h-screen w-screen">
+                  <Sidepanel />
+                  <Products />
+                </div>
+              </BusinessProvider>
             </ProtectedRoute>
           } />
         </Routes>

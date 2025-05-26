@@ -20,6 +20,11 @@ export const sidebarDictionary = {
             English: "Inventories"
         },
         {
+            href: "/products",
+            Portuguese: "Produtos",
+            English: "Products"
+        },
+        {
             href: "/orders",
             Portuguese: "Pedidos",
             English: "Orders"

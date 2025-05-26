@@ -301,7 +301,7 @@ function Inventory() {
             title: "Transferir",
             saveButtonText: "Transferir",
             onSelectChange: setToInventory,
-            onButtonClick: (selectedInventory) => transferItem(selectedInventory),
+            onButtonClick: (inputData) => transferItem(inputData.selectedDropdown),
             inputs: [
               {
                 name: "products",

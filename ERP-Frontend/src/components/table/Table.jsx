@@ -5,10 +5,8 @@ import HeaderFilter from "./headerFilter";
 import { table } from "../translations/table";
 
 export default function Table({ content, headers, currentPage, setCurrentPage, totalPages}) {
-
   const checkedItems = headers.find(header => header.name == "Checkbox").checkedItems;
   const setCheckedItems = headers.find(header => header.name == "Checkbox").setCheckedItems;
-  const language = "Portuguese";
 
   const dataToElement = (data, key) => {
     if (data.type === "label") {

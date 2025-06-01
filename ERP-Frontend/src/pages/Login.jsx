@@ -1,6 +1,8 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Cookies from "js-cookie";
+import TextInput from "../components/inputs/TextInput";
+import Button from "../components/inputs/Button";
 
 const Login = () => {
   const { setUser } = useContext(AuthContext);
@@ -31,25 +33,23 @@ const Login = () => {
     <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-      <input
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <TextInput
+        value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Usuário"
       />
 
-      <input
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <TextInput
         type="password"
+        value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Senha"
       />
 
-      <button
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+      <Button
+        title={"Entrar"}
         onClick={login}
-      >
-        Entrar
-      </button>
+      />
     </div>
   </div>
 );

@@ -1,7 +1,7 @@
 import "../components/css/pages/pages.css"
 import PageTitle from "../components/utils/PageTitle"
 import BusinessDisplay from "../components/utils/BusinessDisplay"
-import AddBusinessDisplay from "../components/utils/AddBusinessDisplay"
+import AddBusinessDisplay from "../components/modals/AddBusinessDisplay"
 
 function Business() {
   return (

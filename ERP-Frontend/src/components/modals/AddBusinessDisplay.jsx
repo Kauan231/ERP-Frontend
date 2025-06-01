@@ -1,5 +1,5 @@
 import { useState } from "react"
-import ModalWithInputs from "../utils/ModalWithInputs";
+import ModalWithInputs from "./ModalWithInputs";
 
 function AddBusinessDisplay({title}) {
   const [businessWindowOpen, setBusinessWindowOpen] = useState(false);

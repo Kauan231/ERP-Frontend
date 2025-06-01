@@ -3,7 +3,7 @@ import "../css/components/table.css";
 import Placeholder from "../../assets/placeholder.svg";
 import HeaderFilter from "./headerFilter";
 import { table } from "../translations/table";
-import { Pagination } from "../utils/Pagination";
+import { Pagination } from "./Pagination";
 
 export default function Table({ content, headers, currentPage, setCurrentPage, totalPages}) {
   const checkedItems = headers.find(header => header.name == "Checkbox").checkedItems;

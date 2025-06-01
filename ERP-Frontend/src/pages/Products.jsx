@@ -3,9 +3,11 @@ import { AuthContext } from "../context/AuthContext";
 import { BusinessContext } from "../context/BusinessContext";
 import PageTitle from "../components/utils/PageTitle";
 import ItemDisplay from "../components/utils/ItemDisplay";
-import ModalWithInputs from "../components/utils/ModalWithInputs";
-import { Pagination } from "../components/utils/Pagination";
-import ModalConfirm from "../components/utils/ModalConfirm";
+import ModalWithInputs from "../components/modals/ModalWithInputs";
+import { Pagination } from "../components/table/Pagination";
+import ModalConfirm from "../components/modals/ModalConfirm";
+import TextInput from "../components/inputs/TextInput";
+import Button from "../components/inputs/Button";
 
 function Products() {
     //Auth
@@ -25,6 +27,9 @@ function Products() {
 
      //Remove product
     const [productToDelete, setProductToDelete] = useState(1);
+
+    //Search
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         getProducts();
@@ -118,15 +123,27 @@ function Products() {
                         className="flex flex-col gap-6"
                     >
                         <div
-                            className="w-full"
+                            className="w-full flex justify-between items-center"
                         >
-                            <button
-                                className="text-white font-semibold rounded-lg p-2 bg-blue-600 hover:opacity-90"
-                                onClick={() => setAddProductWindowOpen(true)}
+                            <div
+                                className="w-[25vw]"
                             >
-                                Adicionar produto
-                            </button>
+                                <TextInput
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                            </div>
+
+                            <div
+                                className="w-[10vw]"
+                            >
+                                <Button
+                                    title={"Adicionar produto"}
+                                    onClick={() => setAddProductWindowOpen(true)}
+                                />
+                            </div>
                         </div>
+
                         <div className="flex flex-wrap gap-4 justify-start overflow-y-auto max-h-[80vh]">
                             {products.map((product, index) => (
                                 <ItemDisplay

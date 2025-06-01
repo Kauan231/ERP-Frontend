@@ -3,7 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import "../components/css/pages/pages.css";
 import PageTitle from "../components/utils/PageTitle";
 import Table from "../components/table/Table";
-import ModalWithInputs from "../components/utils/ModalWithInputs";
+import ModalWithInputs from "../components/modals/ModalWithInputs";
 import Placeholder from "../assets/placeholder.svg";
 
 function Inventory() {

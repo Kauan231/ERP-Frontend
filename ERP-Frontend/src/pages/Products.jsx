@@ -4,6 +4,8 @@ import { BusinessContext } from "../context/BusinessContext";
 import PageTitle from "../components/utils/PageTitle";
 import ItemDisplay from "../components/utils/ItemDisplay";
 import ModalWithInputs from "../components/utils/ModalWithInputs";
+import { Pagination } from "../components/utils/Pagination";
+import ModalConfirm from "../components/utils/ModalConfirm";
 
 function Products() {
     //Auth
@@ -13,26 +15,48 @@ function Products() {
     const { currentBusiness } = useContext(BusinessContext);
     const [products, setProducts] = useState([]);
     const [addProductWindowOpen, setAddProductWindowOpen] = useState(false);
+    const [deleteProductWindowOpen, setDeleteProductWindowOpen] = useState(false);
+
+    //Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit, setLimit] = useState(12);
+    const [totalOfItems, setTotalOfItems] = useState(1);
+     const itemsPerPage = 12;
+
+     //Remove product
+    const [productToDelete, setProductToDelete] = useState(1);
+
+    useEffect(() => {
+        getProducts();
+    }, [currentPage, limit]);
 
 
     const getProducts = async () => {
-        const res = await fetch("https://localhost:7011/Product", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${JSON.parse(user.token).token}`
-        }
+        const skip = (currentPage - 1) * limit;
+        let baseUrl = "https://localhost:7011/Product?";
+        let skipAndLimit = `skip=${skip}&limit=${limit}`
+        let resUrl = baseUrl + skipAndLimit;
+
+        const res = await fetch(resUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${JSON.parse(user.token).token}`
+            }
         });
 
         let results = await res.json();
 
-        results = results.map((result) => {
+        setTotalOfItems(results.totalOfItems)
+
+        results = results.allProducts.map((result) => {
             result.subtitle = result.description;
             delete result.description;
             return result;
         });
 
         setProducts(results);
+
     }
 
     const saveProduct = async (content) => {
@@ -62,6 +86,25 @@ function Products() {
         await getProducts();
     }
 
+    const onDelete = (productId) => {
+        setProductToDelete(productId);
+        setDeleteProductWindowOpen(true);
+    }
+
+    const handleConfirm = async () => {
+        const res = await fetch(`https://localhost:7011/Product/${productToDelete}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${JSON.parse(user.token).token}`
+            }
+        });
+
+        await res;
+        setDeleteProductWindowOpen(false);
+        await getProducts();
+    }
+
     useEffect(() => {
         getProducts()
     }, [])
@@ -86,11 +129,19 @@ function Products() {
                         </div>
                         <div className="flex flex-wrap gap-4 justify-start overflow-y-auto max-h-[80vh]">
                             {products.map((product, index) => (
-                                <ItemDisplay content={product} key={index} />
+                                <ItemDisplay
+                                    content={product}
+                                    key={index}
+                                    onDelete={onDelete}
+                                />
                             ))}
                         </div>
                     </div>
-
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={Math.ceil(totalOfItems / itemsPerPage)}
+                        setCurrentPage={setCurrentPage}
+                    />
                 </div>
             </div>
 
@@ -114,6 +165,19 @@ function Products() {
                 }}
                 />
             )}
+            {   deleteProductWindowOpen && (
+                <ModalConfirm
+                    onClose={() => setDeleteProductWindowOpen(false)}
+                    handleConfirm={async () => await handleConfirm()}
+                    content={
+                        {
+                            title: "Remover produto",
+                            subtitle: "Tem certeza que deseja remover o produto?"
+                        }
+                    }
+                />
+            )}
+
         </div>
     )
 }

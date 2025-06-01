@@ -22,13 +22,13 @@ function Inventory() {
 
   //Pagination
   const [content, setContent] = useState([]);
+  const [limit, setLimit] = useState(6);
   const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+  const [totalOfItems, setTotalOfItems] = useState(1);
 
   //Filter items
   const [selectedFilters, setSelectedFilters] = useState([]);
-  const [limit, setLimit] = useState(7);
-  const [totalOfItems, setTotalOfItems] = useState(1);
-  const itemsPerPage = 7;
 
   useEffect(() => {
     if (user?.token) {
@@ -37,6 +37,7 @@ function Inventory() {
   }, [user]);
 
   useEffect(() => {
+    setCurrentPage(1);
     getTableData();
   }, [selectedFilters]);
 

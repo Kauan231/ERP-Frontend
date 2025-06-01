@@ -1,27 +1,34 @@
 import Placeholder from "../../assets/placeholder.svg";
 
-function ItemDisplay({ content }) {
+function ItemDisplay({ content, onDelete }) {
   return (
-    <div className="bg-white shadow-md hover:shadow-xl transition-shadow duration-300 p-2 rounded-xl w-[19vw] h-[10vh] max-w-sm flex gap-4 items-start border border-gray-200">
+    <div className="bg-white shadow-md hover:shadow-xl transition-shadow duration-300 p-2 rounded-xl w-auto h-auto flex gap-4 items-start border border-gray-200">
       <img
         src={Placeholder}
         alt="placeholder"
-        className="w-16 h-16 object-cover rounded-md"
+        className="w-[4vw] h-[100%] object-cover rounded-md"
       />
 
-      <div className="flex flex-col flex-1">
-        <h2 className="text-md font-semibold text-gray-800 truncate">
+      <div className="flex flex-col flex-1 w-auto">
+        <h2 className="text-md font-semibold text-gray-800 truncate w-[15vw]">
           {content.name}
         </h2>
 
-        <p className="text-xs text-gray-500 mb-1 truncate">
+        <p className="text-xs text-gray-500 mb-1 truncate w-[15vw]">
           ID: {content.id}
         </p>
 
-        <p className="text-sm text-gray-700 line-clamp-2">
+        <p className="text-sm text-gray-700 line-clamp-2 w-[15vw]">
           {content.subtitle ? `Descrição: ${content.subtitle}` : "Sem descrição"}
         </p>
       </div>
+
+      <button
+        className="text-black font-bold bg-gray-200 w-[2vw] h-[2vw] rounded-full"
+        onClick={() => onDelete(content.id) }
+      >
+            X
+        </button>
     </div>
   );
 }

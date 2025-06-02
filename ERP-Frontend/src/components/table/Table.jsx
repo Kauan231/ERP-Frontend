@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import "../css/components/table.css";
 import Placeholder from "../../assets/placeholder.svg";
-import HeaderFilter from "./headerFilter";
+import HeaderFilter from "./HeaderFilter";
 import { table } from "../translations/table";
 import { Pagination } from "./Pagination";
+import HeaderSearch from "./headerSearch";
 
 export default function Table({ content, headers, currentPage, setCurrentPage, totalPages}) {
   const checkedItems = headers.find(header => header.name == "Checkbox").checkedItems;
@@ -87,6 +88,17 @@ export default function Table({ content, headers, currentPage, setCurrentPage, t
           values={header.filters}
           selectedFilters={header.selectedFilters}
           setSelectedFilters={header.setSelectedFilters}
+        />
+      );
+    }
+
+    if (header.type === "search") {
+      return (
+        <HeaderSearch
+          key={index}
+          header={header}
+          placeholder={header.placeholder}
+          onSearch={header.onSearch}
         />
       );
     }

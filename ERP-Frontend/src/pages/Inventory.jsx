@@ -29,6 +29,7 @@ function Inventory() {
 
   //Filter items
   const [selectedFilters, setSelectedFilters] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (user?.token) {
@@ -43,18 +44,23 @@ function Inventory() {
 
   useEffect(() => {
     getTableData();
-  }, [selectedFilters, currentPage, limit]);
+  }, [selectedFilters, currentPage, limit, search]);
+
+  const onSearch = (search) => {
+    setSearch(search);
+  }
 
   async function getTableData() {
     const skip = (currentPage - 1) * limit;
     let baseUrl = "https://localhost:7011/Inventory/InventoryItem/ReadAll";
     let skipAndLimit = `skip=${skip}&limit=${limit}`
-    let filters = '?';
+    let filters = '';
     selectedFilters.forEach((filter) => {
       filters +=  `inventoryIds=${filter.id}&`;
     })
-    let resUrl = baseUrl + filters + skipAndLimit;
-
+    let searchQuery = `?search=${search}&`;
+    let resUrl = baseUrl + searchQuery + filters + skipAndLimit;
+    console.log("resUrl", resUrl)
     const res = await fetch(resUrl, {
       method: "GET",
       headers: {
@@ -71,6 +77,7 @@ function Inventory() {
       return;
     }
 
+
     const result = await res.json();
 
     let contentToAdd = result.allInventoryItems.map((item) => ({
@@ -81,7 +88,7 @@ function Inventory() {
       },
       Name: {
         type: "label-image",
-        text: item.product.name
+        text: item.product.name,
       },
       Description: {
         type: "label",
@@ -138,7 +145,13 @@ function Inventory() {
         setInventoriesToExclude(Toexclude);
       }
     },
-    { name: "Name", size: "20%", type: "normal" },
+    {
+      name: "Name",
+      size: "20%",
+      type: "search",
+      placeholder: "Nome do produto",
+      onSearch: onSearch
+    },
     { name: "Description", size: "20%", type: "normal" },
     { name: "Amount", size: "20%", type: "normal" },
     {

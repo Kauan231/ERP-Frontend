@@ -2,7 +2,7 @@ import Placeholder from "../../assets/placeholder.svg";
 
 function ItemDisplay({ content, onDelete }) {
   return (
-    <div className="bg-white shadow-md hover:shadow-xl transition-shadow duration-300 p-2 rounded-xl w-auto h-auto flex gap-4 items-start border border-gray-200">
+    <div className=" w-[26vw] h-auto flex gap-2 p-2 bg-white shadow-md hover:shadow-xl transition-shadow duration-300 rounded-xl border border-gray-200">
       <img
         src={Placeholder}
         alt="placeholder"

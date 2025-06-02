@@ -6,7 +6,7 @@ import ItemDisplay from "../components/utils/ItemDisplay";
 import ModalWithInputs from "../components/modals/ModalWithInputs";
 import { Pagination } from "../components/table/Pagination";
 import ModalConfirm from "../components/modals/ModalConfirm";
-import TextInput from "../components/inputs/TextInput";
+import Input from "../components/inputs/Input";
 import Button from "../components/inputs/Button";
 
 function Products() {
@@ -40,7 +40,9 @@ function Products() {
         const skip = (currentPage - 1) * limit;
         let baseUrl = "https://localhost:7011/Product?";
         let skipAndLimit = `skip=${skip}&limit=${limit}`
-        let resUrl = baseUrl + skipAndLimit;
+        let searchQuery = `search=${search}&`;
+
+        let resUrl = baseUrl + searchQuery + skipAndLimit;
 
         const res = await fetch(resUrl, {
             method: "GET",
@@ -51,7 +53,6 @@ function Products() {
         });
 
         let results = await res.json();
-
         setTotalOfItems(results.totalOfItems)
 
         results = results.allProducts.map((result) => {
@@ -120,18 +121,28 @@ function Products() {
                 <div className="mainInsideDiv">
                     <PageTitle title="Products" />
                     <div
-                        className="flex flex-col gap-6"
+                        className="flex flex-col gap-6 w-full"
                     >
                         <div
                             className="w-full flex justify-between items-center"
                         >
                             <div
-                                className="w-[25vw]"
+                                className="w-[30vw] flex gap-2"
                             >
-                                <TextInput
+                                <Input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
+                                    placeholder={"Digite o nome do produto"}
                                 />
+                                <div
+                                    className="w-[20vw]"
+                                >
+                                    <Button
+                                        title={"Buscar por produto"}
+                                        onClick={() => getProducts()}
+                                    />
+                                </div>
+
                             </div>
 
                             <div
@@ -144,7 +155,7 @@ function Products() {
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap gap-4 justify-start overflow-y-auto max-h-[80vh]">
+                        <div className="flex flex-wrap gap-4 justify-between overflow-y-auto max-h-[80vh]">
                             {products.map((product, index) => (
                                 <ItemDisplay
                                     content={product}

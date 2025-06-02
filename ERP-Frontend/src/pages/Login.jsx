@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Cookies from "js-cookie";
-import TextInput from "../components/inputs/TextInput";
+import Input from "../components/inputs/Input";
 import Button from "../components/inputs/Button";
 
 const Login = () => {
@@ -30,16 +30,16 @@ const Login = () => {
 
   return (
   <div className="bg-blue-200 h-screen w-screen flex items-center justify-center text-black">
-    <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+    <div className="w-full max-w-md flex flex-col gap-4 p-8 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-      <TextInput
+      <Input
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Usuário"
       />
 
-      <TextInput
+      <Input
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}

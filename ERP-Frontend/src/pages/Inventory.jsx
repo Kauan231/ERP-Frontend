@@ -4,7 +4,9 @@ import "../components/css/pages/pages.css";
 import PageTitle from "../components/utils/PageTitle";
 import Table from "../components/table/Table";
 import ModalWithInputs from "../components/modals/ModalWithInputs";
+import Button from "../components/inputs/Button";
 import Placeholder from "../assets/placeholder.svg";
+import ModalConfirm from "../components/modals/ModalConfirm";
 
 function Inventory() {
   //Auth
@@ -30,6 +32,9 @@ function Inventory() {
   //Filter items
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [search, setSearch] = useState("");
+
+  //Remove Item
+  const [isModalConfirmOpen, setIsModalConfirmOpen] = useState("");
 
   useEffect(() => {
     if (user?.token) {
@@ -130,7 +135,10 @@ function Inventory() {
             onClick={() => { setCheckedItems({}); }}>
             Desmarcar
           </button>
-          <button className="border p-2 rounded-full bg-white hover:bg-gray-200">
+          <button
+            className="border p-2 rounded-full bg-white hover:bg-gray-200"
+            onClick={() => { setIsModalConfirmOpen(true) }}
+          >
             Remover
           </button>
         </>
@@ -286,8 +294,29 @@ function Inventory() {
     setTransferItems(undefined);
     setToInventory(undefined);
     setCheckedItems({});
-    getTableData();
+    await getTableData();
   };
+
+  const removeItems = async() => {
+    let inventoryIds = Object.keys(checkedItems);
+
+    const res = await fetch("https://localhost:7011/Inventory/InventoryItem/DeleteMany", {
+      method: "POST",
+      body: JSON.stringify(inventoryIds),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${JSON.parse(user.token).token}`
+      }
+    });
+
+    if (!res.ok) {
+      console.error("Erro na remover:", res.status);
+    }
+
+    setCheckedItems({});
+    setIsModalConfirmOpen(false);
+    await getTableData()
+  }
 
   return (
     <>
@@ -295,6 +324,22 @@ function Inventory() {
         <div className='mainDiv'>
           <div className="mainInsideDiv">
             <PageTitle title="Inventarios" />
+
+            <div
+              className="w-full pb-8"
+            >
+              <div
+                className="w-[12vw]"
+              >
+                <Button
+                  title={"Adicionar ao inventário"}
+                  //onClick={() => setAddProductWindowOpen(true)}
+                />
+              </div>
+
+            </div>
+
+
             <div className="flex flex-col w-full">
               <Table
                 content={content}
@@ -333,6 +378,21 @@ function Inventory() {
           }}
         />
       )}
+
+      { isModalConfirmOpen &&
+        <ModalConfirm
+          onClose={() => setIsModalConfirmOpen(false)}
+          handleConfirm={async () => await removeItems()}
+          content={
+              {
+                  title: "Remover produto",
+                  subtitle: "Tem certeza que deseja remover o produto?"
+              }
+          }
+        />
+
+      }
+
     </>
   );
 }

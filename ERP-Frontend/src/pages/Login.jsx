@@ -32,24 +32,43 @@ const Login = () => {
   <div className="bg-blue-200 h-screen w-screen flex items-center justify-center text-black">
     <div className="w-full max-w-md flex flex-col gap-4 p-8 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+      <div>
+        <label
+          className="font-bold"
+        > Usuário: </label>
+        <Input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Usuário"
+        />
+      </div>
 
-      <Input
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Usuário"
-      />
+      <div>
+        <label
+          className="font-bold"
+        > Senha: </label>
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Senha"
+        />
+      </div>
 
-      <Input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Senha"
-      />
+      <div className="w-full flex flex-col items-end space-y-2">
+        <Button
+          onClick={login}
+          title={"Entrar"}
+        />
+        <a
+          href="/register"
+          className="text-sm text-blue-600 hover:underline"
+        >
+          Cadastrar
+        </a>
+      </div>
 
-      <Button
-        title={"Entrar"}
-        onClick={login}
-      />
+
     </div>
   </div>
 );

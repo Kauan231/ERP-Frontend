@@ -4,6 +4,7 @@ import { BusinessProvider } from "./context/BusinessContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Sidepanel from './components/sidepanel/Sidepanel.jsx';
 import Business from './pages/Business.jsx';
 import Inventory from "./pages/Inventory.jsx";
@@ -15,6 +16,7 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={
             <ProtectedRoute>
               <div className="flex h-screen w-screen">

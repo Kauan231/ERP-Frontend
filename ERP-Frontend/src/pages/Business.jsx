@@ -53,9 +53,6 @@ function Business() {
 
     if (!res.ok) {
       console.error("Erro ao buscar dados:", res.status);
-      if (res.status === 404) {
-        setUser(null);
-      }
       return;
     }
 

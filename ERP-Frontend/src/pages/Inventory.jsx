@@ -361,6 +361,7 @@ function Inventory() {
       name: inventoryName,
       businessId: businessId
     }
+
     const res = await fetch("https://localhost:7011/Inventory", {
       method: "POST",
       body: JSON.stringify(body),

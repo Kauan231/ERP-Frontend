@@ -85,7 +85,7 @@ function Products() {
         });
 
         if (!res.ok) {
-            console.error("Erro na transferência:", res.status);
+            console.error("Erro ao adicionar item:", res.status);
         }
 
         setAddProductWindowOpen(false);
@@ -158,7 +158,7 @@ function Products() {
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap gap-4 justify-between overflow-y-auto max-h-[80vh]">
+                        <div className="flex flex-wrap gap-4 justify-start overflow-y-auto max-h-[80vh]">
                             {products.map((product, index) => (
                                 <ItemDisplay
                                     content={product}

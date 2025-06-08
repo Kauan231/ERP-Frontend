@@ -8,6 +8,7 @@ import Button from "../components/inputs/Button";
 import Placeholder from "../assets/placeholder.svg";
 import ModalConfirm from "../components/modals/ModalConfirm";
 import ModalSearchProduct from "../components/modals/ModalSearchProduct";
+import ModalRemoveInventory from "../components/modals/ModalRemoveInventory";
 
 function Inventory() {
   //Auth
@@ -40,9 +41,17 @@ function Inventory() {
   //Add item
   const [isModalSearchOpen, setIsModalSearchOpen] = useState(false);
 
+  //Add inventory
+  const [IsModalNewInventoryOpen, setIsModalNewInventoryOpen] = useState(false);
+  const [businesses, setBusinesses] = useState([]);
+
+  //Remove Inventory
+  const [isModalRemoveInventoryOpen, setIsModalRemoveInventoryOpen] = useState(false);
+
   useEffect(() => {
     if (user?.token) {
       getTableData();
+      getBusinesses();
     }
   }, [user]);
 
@@ -57,6 +66,28 @@ function Inventory() {
 
   const onSearch = (search) => {
     setSearch(search);
+  }
+
+  const getBusinesses = async() => {
+    let baseUrl = "https://localhost:7011/User/Businesses";
+    const res = await fetch(baseUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${JSON.parse(user.token).token}`
+      }
+    });
+
+    if (!res.ok) {
+      console.error("Erro ao buscar dados:", res.status);
+      if (res.status === 404) {
+        setUser(null);
+      }
+      return;
+    }
+
+    const result = await res.json();
+    setBusinesses(result);
   }
 
   async function getTableData() {
@@ -322,6 +353,31 @@ function Inventory() {
     await getTableData()
   }
 
+  const SaveInventory= async (content) => {
+    let inventoryName = content.refs[0].value;
+    let businessId = businesses[0].id;
+
+    let body = {
+      name: inventoryName,
+      businessId: businessId
+    }
+    const res = await fetch("https://localhost:7011/Inventory", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${JSON.parse(user.token).token}`
+      }
+    });
+
+    if (!res.ok) {
+      console.error("Erro na remover:", res.status);
+    }
+
+    setIsModalNewInventoryOpen(false);
+    await getTableData()
+  }
+
   return (
     <>
       <div className='w-full h-full flex'>
@@ -329,20 +385,34 @@ function Inventory() {
           <div className="mainInsideDiv">
             <PageTitle title="Inventarios" />
 
-            <div
-              className="w-full pb-8"
-            >
-              <div
-                className="w-[12vw]"
-              >
+            <div className="w-full pb-8 flex flex-wrap gap-6 items-start">
+
+            <div className="flex flex-wrap gap-4 items-start">
+              <div>
                 <Button
-                  title={"Adicionar ao inventário"}
-                  onClick={() => setIsModalSearchOpen(true)}
+                  title="Novo inventário"
+                  onClick={() => setIsModalNewInventoryOpen(true)}
                 />
               </div>
-
+              <div>
+                <Button
+                  title="Remover inventário"
+                  onClick={() => setIsModalRemoveInventoryOpen(true)}
+                  type="remove"
+                />
+              </div>
             </div>
 
+            <div className="w-px h-10 bg-gray-300 mx-2 hidden sm:block" />
+
+            <div>
+              <Button
+                title="Adicionar item a inventário"
+                onClick={() => setIsModalSearchOpen(true)}
+              />
+            </div>
+
+          </div>
 
             <div className="flex flex-col w-full">
               <Table
@@ -404,6 +474,36 @@ function Inventory() {
           title="Adicionar produto a inventário"
           onClose={() => setIsModalSearchOpen(false)}
         />
+      }
+
+      {
+        IsModalNewInventoryOpen &&
+          <ModalWithInputs
+            onClose={() => setIsModalNewInventoryOpen(false)}
+            content={{
+              title: "Adicionar inventário",
+              saveButtonText: "Salvar",
+              onButtonClick: async (content) => await SaveInventory(content),
+              inputs: [
+                {
+                  name: "Nome do inventário",
+                  type: "normal"
+                }
+              ],
+            }}
+          />
+      }
+
+      {
+        isModalRemoveInventoryOpen &&
+          <ModalRemoveInventory
+            onClose={async () => {
+              setIsModalRemoveInventoryOpen(false);
+              setSelectedFilters([]);
+              setCurrentPage(1);
+              await getTableData();
+            }}
+          />
       }
 
     </>

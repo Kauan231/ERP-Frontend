@@ -139,7 +139,10 @@ function Products() {
                                 >
                                     <Button
                                         title={"Buscar por produto"}
-                                        onClick={() => getProducts()}
+                                        onClick={() => {
+                                            setCurrentPage(1);
+                                            getProducts();
+                                        }}
                                     />
                                 </div>
 

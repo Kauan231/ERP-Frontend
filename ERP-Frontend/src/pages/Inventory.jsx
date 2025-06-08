@@ -7,6 +7,7 @@ import ModalWithInputs from "../components/modals/ModalWithInputs";
 import Button from "../components/inputs/Button";
 import Placeholder from "../assets/placeholder.svg";
 import ModalConfirm from "../components/modals/ModalConfirm";
+import ModalSearchProduct from "../components/modals/ModalSearchProduct";
 
 function Inventory() {
   //Auth
@@ -34,7 +35,10 @@ function Inventory() {
   const [search, setSearch] = useState("");
 
   //Remove Item
-  const [isModalConfirmOpen, setIsModalConfirmOpen] = useState("");
+  const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
+
+  //Add item
+  const [isModalSearchOpen, setIsModalSearchOpen] = useState(false);
 
   useEffect(() => {
     if (user?.token) {
@@ -45,11 +49,11 @@ function Inventory() {
   useEffect(() => {
     setCurrentPage(1);
     getTableData();
-  }, [selectedFilters]);
+  }, [selectedFilters, isModalSearchOpen]);
 
   useEffect(() => {
     getTableData();
-  }, [selectedFilters, currentPage, limit, search]);
+  }, [currentPage, limit, search]);
 
   const onSearch = (search) => {
     setSearch(search);
@@ -333,7 +337,7 @@ function Inventory() {
               >
                 <Button
                   title={"Adicionar ao inventário"}
-                  //onClick={() => setAddProductWindowOpen(true)}
+                  onClick={() => setIsModalSearchOpen(true)}
                 />
               </div>
 
@@ -391,6 +395,15 @@ function Inventory() {
           }
         />
 
+      }
+
+      {
+        isModalSearchOpen &&
+
+        <ModalSearchProduct
+          title="Adicionar produto a inventário"
+          onClose={() => setIsModalSearchOpen(false)}
+        />
       }
 
     </>

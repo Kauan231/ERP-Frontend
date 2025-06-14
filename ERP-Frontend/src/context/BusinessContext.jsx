@@ -7,6 +7,7 @@ export function BusinessProvider({ children }) {
   //Auth
   const { user } = useContext(AuthContext);
   const [currentBusiness, setCurrentBusiness] = useState(null);
+  const [businesses, setBusinesses] = useState([]);
 
 
   const getBusinesses = async () => {
@@ -27,19 +28,20 @@ export function BusinessProvider({ children }) {
     }
 
     let results = await res.json();
+
+    setBusinesses(results);
     return setCurrentBusiness(results[0].id);
     //return results.map(result => result.id);
   }
 
   useEffect(() => {
-    if (currentBusiness == null) {
-      let results = getBusinesses();
-      setCurrentBusiness(results[0]);
+    if (currentBusiness == null || businesses.length == 0) {
+      getBusinesses();
     }
   }, []);
 
   return (
-    <BusinessContext.Provider value={{ currentBusiness, setCurrentBusiness }}>
+    <BusinessContext.Provider value={{ currentBusiness, businesses, setCurrentBusiness }}>
       {children}
     </BusinessContext.Provider>
   );

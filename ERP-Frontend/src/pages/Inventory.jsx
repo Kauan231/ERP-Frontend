@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { BusinessContext } from "../context/BusinessContext";
 import "../components/css/pages/pages.css";
 import PageTitle from "../components/utils/PageTitle";
 import Table from "../components/table/Table";
@@ -13,6 +14,7 @@ import ModalRemoveInventory from "../components/modals/ModalRemoveInventory";
 function Inventory() {
   //Auth
   const { user, setUser } = useContext(AuthContext);
+  const { currentBusiness } = useContext(BusinessContext);
 
   //Manipulate items
   const [allInventories, setAllInventories] = useState([]);
@@ -49,19 +51,31 @@ function Inventory() {
   const [isModalRemoveInventoryOpen, setIsModalRemoveInventoryOpen] = useState(false);
 
   useEffect(() => {
-    if (user?.token) {
+    if (user?.token && currentBusiness != undefined) {
       getTableData();
       getBusinesses();
     }
   }, [user]);
 
+
   useEffect(() => {
-    setCurrentPage(1);
-    getTableData();
+    if (user?.token && currentBusiness != undefined) {
+      getTableData();
+      getBusinesses();
+    }
+  }, [currentBusiness]);
+
+  useEffect(() => {
+    if(currentBusiness != undefined) {
+      setCurrentPage(1);
+      getTableData();
+    }
   }, [selectedFilters, isModalSearchOpen]);
 
   useEffect(() => {
-    getTableData();
+    if(currentBusiness != undefined) {
+      getTableData();
+    }
   }, [currentPage, limit, search]);
 
   const onSearch = (search) => {
@@ -69,7 +83,7 @@ function Inventory() {
   }
 
   const getBusinesses = async() => {
-    let baseUrl = "https://localhost:7011/User/Businesses";
+    let baseUrl = "https://localhost:7011/User/Businesses/";
     const res = await fetch(baseUrl, {
       method: "GET",
       headers: {
@@ -92,13 +106,13 @@ function Inventory() {
 
   async function getTableData() {
     const skip = (currentPage - 1) * limit;
-    let baseUrl = "https://localhost:7011/Inventory/InventoryItem/ReadAll";
+    let baseUrl = `https://localhost:7011/Inventory/InventoryItem/ReadAll?businessId=${currentBusiness}`;
     let skipAndLimit = `skip=${skip}&limit=${limit}`
     let filters = '';
     selectedFilters.forEach((filter) => {
       filters +=  `inventoryIds=${filter.id}&`;
     })
-    let searchQuery = `?search=${search}&`;
+    let searchQuery = `&search=${search}&`;
     let resUrl = baseUrl + searchQuery + filters + skipAndLimit;
     console.log("resUrl", resUrl)
     const res = await fetch(resUrl, {

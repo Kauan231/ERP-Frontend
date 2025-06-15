@@ -1,22 +1,35 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
 import "../css/components/sidepanel.css";
 import { sidebarDictionary } from "../translations/sidepanel";
+import { BusinessContext } from "../../context/BusinessContext";
 
 function Sidepanel() {
   const { setUser } = useContext(AuthContext);
+  const { currentBusiness, businesses, getBusinesses } = useContext(BusinessContext);
+
   const language = "Portuguese";
 
   const handleLogout = () => {
     setUser(null);
   };
 
+  useEffect(() => {
+    if(currentBusiness == undefined) {
+      getBusinesses();
+    }
+  }, []);
+
   return (
     <aside className="w-64 bg-blue-800 text-white flex flex-col">
       <div className="p-6 text-2xl font-bold border-b border-blue-700">
         {sidebarDictionary.title[language]}
+        <div className="text-sm font-bold">
+          {businesses.find(business => business.id == currentBusiness)?.name}
+        </div>
       </div>
+
       <nav className="flex-1 p-4 space-y-4">
         {sidebarDictionary.buttons.map((button, index) => (
           <a

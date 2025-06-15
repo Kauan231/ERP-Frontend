@@ -32,13 +32,19 @@ function Products() {
     const [search, setSearch] = useState("");
 
     useEffect(() => {
+        if(currentBusiness != undefined) {
+            getProducts();
+        }
+    }, [])
+
+    useEffect(() => {
         getProducts();
-    }, [currentPage, limit]);
+    }, [currentPage, limit, currentBusiness]);
 
 
     const getProducts = async () => {
         const skip = (currentPage - 1) * limit;
-        let baseUrl = "https://localhost:7011/Product?";
+        let baseUrl = `https://localhost:7011/Product?businessId=${currentBusiness}&`;
         let skipAndLimit = `skip=${skip}&limit=${limit}`
         let searchQuery = `search=${search}&`;
 
@@ -110,10 +116,6 @@ function Products() {
         setDeleteProductWindowOpen(false);
         await getProducts();
     }
-
-    useEffect(() => {
-        getProducts()
-    }, [])
 
     return (
         <div className='w-full h-full flex'>

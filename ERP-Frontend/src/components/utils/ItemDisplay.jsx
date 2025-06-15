@@ -1,8 +1,11 @@
 import Placeholder from "../../assets/placeholder.svg";
 
-function ItemDisplay({ content, onDelete }) {
+function ItemDisplay({ content, onDelete, onClick, selected }) {
   return (
-    <div className=" w-[26vw] h-auto flex gap-2 p-2 bg-white shadow-md hover:shadow-xl transition-shadow duration-300 rounded-xl border border-gray-200">
+    <div
+        onClick={onClick}
+        className={`w-[26vw] h-auto flex gap-2 p-2 ${selected ? "bg-gray-200" : "bg-white"} shadow-md hover:shadow-xl transition-shadow duration-300 rounded-xl border border-gray-200`}
+      >
       <img
         src={Placeholder}
         alt="placeholder"

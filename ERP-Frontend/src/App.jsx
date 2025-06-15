@@ -15,48 +15,46 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={
-            <ProtectedRoute>
-              <div className="flex h-screen w-screen">
-                <Sidepanel />
-                <Business />
-              </div>
-            </ProtectedRoute>
-          } />
-          <Route path="/inventories" element={
-            <ProtectedRoute>
-              <div className="flex h-screen w-screen">
-                <Sidepanel />
-                <Inventory />
-              </div>
-            </ProtectedRoute>
-          } />
+        <BusinessProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                  <div className="flex h-screen w-screen">
+                    <Sidepanel />
+                    <Business />
+                  </div>
+              </ProtectedRoute>
+            } />
+            <Route path="/inventories" element={
+              <ProtectedRoute>
+                  <div className="flex h-screen w-screen">
+                    <Sidepanel />
+                    <Inventory />
+                  </div>
+              </ProtectedRoute>
+            } />
 
-          <Route path="/Products" element={
-            <ProtectedRoute>
-              <BusinessProvider>
-                <div className="flex h-screen w-screen">
-                  <Sidepanel />
-                  <Products />
-                </div>
-              </BusinessProvider>
-            </ProtectedRoute>
-          } />
+            <Route path="/Products" element={
+              <ProtectedRoute>
+                  <div className="flex h-screen w-screen">
+                    <Sidepanel />
+                    <Products />
+                  </div>
+              </ProtectedRoute>
+            } />
 
-          <Route path="/Customers" element={
-            <ProtectedRoute>
-              <BusinessProvider>
-                <div className="flex h-screen w-screen">
-                  <Sidepanel />
-                  <Customers />
-                </div>
-              </BusinessProvider>
-            </ProtectedRoute>
-          } />
-        </Routes>
+            <Route path="/Customers" element={
+              <ProtectedRoute>
+                  <div className="flex h-screen w-screen">
+                    <Sidepanel />
+                    <Customers />
+                  </div>
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </BusinessProvider>
       </AuthProvider>
     </BrowserRouter>
   );

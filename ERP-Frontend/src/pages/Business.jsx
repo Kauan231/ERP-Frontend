@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { BusinessContext } from "../context/BusinessContext";
 
 import "../components/css/pages/pages.css"
 import PageTitle from "../components/utils/PageTitle"
@@ -12,6 +13,8 @@ import ModalConfirm from "../components/modals/ModalConfirm";
 function Business() {
   //Auth
   const { user, setUser } = useContext(AuthContext);
+  const { currentBusiness, setCurrentBusiness } = useContext(BusinessContext);
+
   const [businesses, setBusinesses] = useState([]);
   const [businessWindowOpen, setBusinessWindowOpen] = useState(false);
   const [deleteCompanyModalOpen, setDeleteCompanyModalOpen] = useState(false);
@@ -112,10 +115,12 @@ function Business() {
                   return (
                     <ItemDisplay
                       content={business}
+                      onClick={() => {setCurrentBusiness(business.id)}}
                       onDelete={() => {
                         setCompanyToDelete(business.id);
                         setDeleteCompanyModalOpen(true);
                       }}
+                      selected={currentBusiness == business.id}
                     />
                   )
                 }

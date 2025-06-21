@@ -10,8 +10,9 @@ import Placeholder from "../assets/placeholder.svg";
 import ModalConfirm from "../components/modals/ModalConfirm";
 import ModalSearchProduct from "../components/modals/ModalSearchProduct";
 import ModalRemoveInventory from "../components/modals/ModalRemoveInventory";
+import { useParams } from "react-router-dom";
 
-function Inventory() {
+function Shipments() {
   //Auth
   const { user, setUser } = useContext(AuthContext);
   const { currentBusiness } = useContext(BusinessContext);
@@ -50,10 +51,12 @@ function Inventory() {
   //Remove Inventory
   const [isModalRemoveInventoryOpen, setIsModalRemoveInventoryOpen] = useState(false);
 
+  //Shipments
+  const { productId } = useParams();
+
   useEffect(() => {
     if (user?.token && currentBusiness != undefined) {
       getTableData();
-      getBusinesses();
     }
   }, [user]);
 
@@ -61,7 +64,6 @@ function Inventory() {
   useEffect(() => {
     if (user?.token && currentBusiness != undefined) {
       getTableData();
-      getBusinesses();
     }
   }, [currentBusiness]);
 
@@ -82,39 +84,15 @@ function Inventory() {
     setSearch(search);
   }
 
-  const getBusinesses = async() => {
-    let baseUrl = "https://localhost:7011/User/Businesses/";
-    const res = await fetch(baseUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${JSON.parse(user.token).token}`
-      }
-    });
-
-    if (!res.ok) {
-      console.error("Erro ao buscar dados:", res.status);
-      if (res.status === 404) {
-        setUser(null);
-      }
-      return;
-    }
-
-    const result = await res.json();
-    setBusinesses(result);
-  }
-
   async function getTableData() {
+
+
     const skip = (currentPage - 1) * limit;
-    let baseUrl = `https://localhost:7011/Inventory/InventoryItem/ReadAll?businessId=${currentBusiness}`;
+    let baseUrl = `https://localhost:7011/Shipment?businessId=${currentBusiness}`;
     let skipAndLimit = `skip=${skip}&limit=${limit}`
-    let filters = '';
-    selectedFilters.forEach((filter) => {
-      filters +=  `inventoryIds=${filter.id}&`;
-    })
     let searchQuery = `&search=${search}&`;
-    let resUrl = baseUrl + searchQuery + filters + skipAndLimit;
-    console.log("resUrl", resUrl)
+    let resUrl = baseUrl + searchQuery + skipAndLimit;
+
     const res = await fetch(resUrl, {
       method: "GET",
       headers: {
@@ -134,33 +112,74 @@ function Inventory() {
 
     const result = await res.json();
 
-    let contentToAdd = result.allInventoryItems.map((item) => ({
+    let contentToAdd = result.shipments.map((item) => ({
       Checkbox: {
         type: "checkbox",
         id: item.id,
-        productId: item.product.id
+        productId: item.id
       },
-      Name: {
-        type: "label-image",
-        text: item.product.name,
-      },
-      Description: {
+      Status: {
         type: "label",
-        text: item.product.description
+        text: item.status,
       },
-      Amount: {
+      Type: {
         type: "label",
-        text: item.amount
+        text: item.type,
       },
-      Inventory: {
-        type: "label-filter",
-        text: item.inventory.name,
-        id: item.inventory.id
-      }
-    })).filter(item => item.Amount.text > 0);
+      Date: {
+        type: "label",
+        text: new Date(item.date).toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      },
+      Items: {
+        type: "custom",
+        content: () => (
+          <ul>
+            {item.orderItems.map((orderItem, idx) => (
+              <div
+                className="flex flex-col mb-2"
+              >
+                <div
+                  className={`flex flex-row gap-2 ${idx != 0 ? 'pt-2 border-t-2' : '' }`}
+                >
+                  <label>Produto: </label>
+                  <label
+                    className="font-semibold"
+                  > {orderItem.productName ?? "Unnamed Product"} </label>
+                </div>
+
+                <div
+                  className="flex flex-row gap-2"
+                >
+                  <label>Quantia: </label>
+                  <label
+                    className="font-semibold"
+                  > {orderItem.amount ?? "--"} </label>
+                </div>
+
+                <div
+                  className="flex flex-row gap-2"
+                >
+                  <label>Vindo de: </label>
+                  <label
+                    className="font-semibold"
+                  > {orderItem.inventoryFromName ?? "--"} </label>
+                </div>
+              </div>
+
+            ))}
+          </ul>
+        ),
+      },
+    }));
 
     setContent(contentToAdd);
-    setAllInventories(result.allInventories.map(inv => ({ id: inv.id, text: inv.name })));
+    //setAllInventories(result.allInventories.map(inv => ({ id: inv.id, text: inv.name })));
     setTotalOfItems(result.totalOfItems);
   }
 
@@ -169,59 +188,15 @@ function Inventory() {
       name: "Checkbox",
       size: "10%",
       type: "normal",
-      checkedItems: checkedItems,
-      setCheckedItems: setCheckedItems,
-      actionButtons: () => (
-        <>
-          <button
-            className="border p-2 rounded-full bg-white hover:bg-gray-200"
-            onClick={() => setTransferWindowOpen(true)}
-          >
-            Transferir
-          </button>
-          <button
-            className="border p-2 rounded-full bg-white hover:bg-gray-200"
-            onClick={() => { setCheckedItems({}); }}>
-            Desmarcar
-          </button>
-          <button
-            className="border p-2 rounded-full bg-white hover:bg-gray-200"
-            onClick={() => { setIsModalConfirmOpen(true) }}
-          >
-            Remover
-          </button>
-        </>
-      ),
-      getCheckedItens: (items) => {
-        setCheckedItems({ ...items });
-        const Toexclude = Object.keys(items).reduce((acc, key) => {
-          const found = content.find(cont => cont.Checkbox.id === key);
-          if (found) acc.push(found.Inventory.id);
-          return acc;
-        }, []);
-        setInventoriesToExclude(Toexclude);
-      }
+      checkedItems: checkedItems
     },
+    { name: "Status", size: "20%", type: "normal" },
+    { name: "Type", size: "20%", type: "normal" },
+    { name: "Date", size: "20%", type: "normal" },
     {
-      name: "Name",
+      name: "Items",
       size: "20%",
-      type: "search",
-      placeholder: "Nome do produto",
-      onSearch: onSearch
-    },
-    { name: "Description", size: "20%", type: "normal" },
-    { name: "Amount", size: "20%", type: "normal" },
-    {
-      name: "Inventory",
-      size: "20%",
-      type: "filter",
-      filters: allInventories,
-      selectedFilters: selectedFilters,
-      setSelectedFilters: setSelectedFilters,
-      filterFromList: (filters) => {
-        if (filters.length === 0) return content;
-        return content.filter(content => filters.includes(content.Inventory.text));
-      }
+      type: "custom",
     }
   ];
 
@@ -343,7 +318,6 @@ function Inventory() {
     if (!res.ok) {
       console.error("Erro na transferência:", res.status);
     }
-
 
     setTransferWindowOpen(false);
     setTransferItems(undefined);
@@ -531,4 +505,4 @@ function Inventory() {
   );
 }
 
-export default Inventory;
+export default Shipments;

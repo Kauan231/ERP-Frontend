@@ -64,11 +64,15 @@ export default function Table({ content, headers, currentPage, setCurrentPage, t
       );
     }
 
+    if (data.type === "custom") {
+      return data.content();
+    }
+
     return null;
   };
 
   const dataToHeader = (header, index) => {
-    if (header.type === "normal") {
+    if (header.type === "normal" || header.type == "custom") {
       return (
         <th
           key={index}
@@ -119,7 +123,7 @@ export default function Table({ content, headers, currentPage, setCurrentPage, t
       {/* Cabeçalho fixo */}
       <table className="Table">
         <thead>
-          <tr className="text-gray-200">
+          <tr className="text-gray-200 border-b-2 border-gray-600">
             {headers.map((header, index) => dataToHeader(header, index))}
           </tr>
         </thead>
@@ -130,7 +134,7 @@ export default function Table({ content, headers, currentPage, setCurrentPage, t
         <table className="w-full table-fixed text-black border-collapse">
           <tbody>
             {content.map((row, rowIndex) => (
-              <tr key={rowIndex} className="bg-white hover:bg-gray-200">
+              <tr key={rowIndex} className="bg-white hover:bg-gray-200 border-b-2 border-gray-500/30">
                 {headers.map((header, colIndex) => (
                   <td
                     key={colIndex}

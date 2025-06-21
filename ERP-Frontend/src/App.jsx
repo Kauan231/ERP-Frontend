@@ -10,6 +10,7 @@ import Business from './pages/Business.jsx';
 import Inventory from "./pages/Inventory.jsx";
 import Products from "./pages/Products.jsx";
 import Customers from "./pages/Customers.jsx";
+import Shipments from "./pages/Shipments.jsx";
 
 export default function App() {
   return (
@@ -50,6 +51,15 @@ export default function App() {
                   <div className="flex h-screen w-screen">
                     <Sidepanel />
                     <Customers />
+                  </div>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/Shipments" element={
+              <ProtectedRoute>
+                  <div className="flex h-screen w-screen">
+                    <Sidepanel />
+                    <Shipments />
                   </div>
               </ProtectedRoute>
             } />

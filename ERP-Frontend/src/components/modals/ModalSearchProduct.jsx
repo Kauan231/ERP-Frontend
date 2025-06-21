@@ -1,11 +1,13 @@
 import { useRef, useState, useContext, useEffect } from "react";
 import Input from "../inputs/Input";
 import { AuthContext } from "../../context/AuthContext";
+import { BusinessContext } from "../../context/BusinessContext";
 import Placeholder from "../../assets/placeholder.svg";
 
 export default function ModalSearchProduct({ title, saveButtonText, onClose }) {
   //Auth
   const { user, setUser } = useContext(AuthContext);
+  const { currentBusiness } = useContext(BusinessContext);
 
   const [results, setResults] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -25,7 +27,7 @@ export default function ModalSearchProduct({ title, saveButtonText, onClose }) {
     if(search?.length < 3) {
       return setResults([]);
     };
-    let baseUrl = "https://localhost:7011/Product?skip=0&limit=100&search="+search;
+    let baseUrl = `https://localhost:7011/Product?businessId=${currentBusiness}&skip=0&limit=100&search=${search}`;
     const res = await fetch(baseUrl, {
       method: "GET",
       headers: {
@@ -51,7 +53,7 @@ export default function ModalSearchProduct({ title, saveButtonText, onClose }) {
     if(search?.length < 3) {
       return setResults([]);
     };
-    let baseUrl = "https://localhost:7011/Inventory?skip=0&limit=2&search="+search;
+    let baseUrl = `https://localhost:7011/Inventory?businessId=${currentBusiness}&skip=0&limit=2&search=${search}`;
     const res = await fetch(baseUrl, {
       method: "GET",
       headers: {

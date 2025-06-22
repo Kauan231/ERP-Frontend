@@ -11,6 +11,7 @@ import ModalConfirm from "../components/modals/ModalConfirm";
 import ModalSearchProduct from "../components/modals/ModalSearchProduct";
 import ModalRemoveInventory from "../components/modals/ModalRemoveInventory";
 import { useParams } from "react-router-dom";
+import ModalReceiveProducts from "../components/modals/ModalReceiveProducts";
 
 function Shipments() {
   //Auth
@@ -42,7 +43,7 @@ function Shipments() {
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
 
   //Add item
-  const [isModalSearchOpen, setIsModalSearchOpen] = useState(false);
+  const [isModalReceiveProductOpen, setIsModalReceiveProductOpen] = useState(false);
 
   //Add inventory
   const [IsModalNewInventoryOpen, setIsModalNewInventoryOpen] = useState(false);
@@ -72,7 +73,7 @@ function Shipments() {
       setCurrentPage(1);
       getTableData();
     }
-  }, [selectedFilters, isModalSearchOpen]);
+  }, [selectedFilters, isModalReceiveProductOpen]);
 
   useEffect(() => {
     if(currentBusiness != undefined) {
@@ -378,32 +379,14 @@ function Shipments() {
       <div className='w-full h-full flex'>
         <div className='mainDiv'>
           <div className="mainInsideDiv">
-            <PageTitle title="Inventarios" />
+            <PageTitle title="Transferencias" />
 
             <div className="w-full pb-8 flex flex-wrap gap-6 items-start">
 
-            <div className="flex flex-wrap gap-4 items-start">
-              <div>
-                <Button
-                  title="Novo inventário"
-                  onClick={() => setIsModalNewInventoryOpen(true)}
-                />
-              </div>
-              <div>
-                <Button
-                  title="Remover inventário"
-                  onClick={() => setIsModalRemoveInventoryOpen(true)}
-                  type="remove"
-                />
-              </div>
-            </div>
-
-            <div className="w-px h-10 bg-gray-300 mx-2 hidden sm:block" />
-
             <div>
               <Button
-                title="Adicionar item a inventário"
-                onClick={() => setIsModalSearchOpen(true)}
+                title="Receber produtos de fornecedor"
+                onClick={() => setIsModalReceiveProductOpen(true)}
               />
             </div>
 
@@ -463,11 +446,11 @@ function Shipments() {
       }
 
       {
-        isModalSearchOpen &&
+        isModalReceiveProductOpen &&
 
-        <ModalSearchProduct
+        <ModalReceiveProducts
           title="Adicionar produto a inventário"
-          onClose={() => setIsModalSearchOpen(false)}
+          onClose={() => setIsModalReceiveProductOpen(false)}
         />
       }
 

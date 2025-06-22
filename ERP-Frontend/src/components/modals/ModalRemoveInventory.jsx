@@ -1,11 +1,13 @@
 import { useState, useContext, useEffect } from "react";
 import Input from "../inputs/Input";
-import { AuthContext } from "../../context/AuthContext";
 import Placeholder from "../../assets/placeholder.svg";
+import { AuthContext } from "../../context/AuthContext";
+import { BusinessContext } from "../../context/BusinessContext";
 
 export default function ModalRemoveInventory({ onClose }) {
   //Auth
   const { user, setUser } = useContext(AuthContext);
+  const { currentBusiness } = useContext(BusinessContext);
 
   const [results, setResults] = useState([]);
   const [selectedInventoryId, setSelectedInventoryId] = useState("");
@@ -24,7 +26,7 @@ export default function ModalRemoveInventory({ onClose }) {
 
   const searchForInventories = async () => {
     setSelectedInventoryId(undefined);
-    let baseUrl = "https://localhost:7011/Inventory?skip=0&limit=100&search="+search;
+    let baseUrl = `https://localhost:7011/Inventory?businessId=${currentBusiness}&skip=0&limit=100&search=${search}`;
     const res = await fetch(baseUrl, {
       method: "GET",
       headers: {

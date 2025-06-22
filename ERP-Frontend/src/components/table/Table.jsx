@@ -1,14 +1,12 @@
-import { useState, useEffect } from "react";
 import "../css/components/table.css";
 import Placeholder from "../../assets/placeholder.svg";
 import HeaderFilter from "./HeaderFilter";
-import { table } from "../translations/table";
 import { Pagination } from "./Pagination";
 import HeaderSearch from "./headerSearch";
 
 export default function Table({ content, headers, currentPage, setCurrentPage, totalPages}) {
-  const checkedItems = headers.find(header => header.name == "Checkbox").checkedItems;
-  const setCheckedItems = headers.find(header => header.name == "Checkbox").setCheckedItems;
+  const checkedItems = headers.find(header => header.name == "Checkbox")?.checkedItems;
+  const setCheckedItems = headers.find(header => header.name == "Checkbox")?.setCheckedItems;
 
   const dataToElement = (data, key) => {
     if (data.type === "label") {
@@ -110,8 +108,7 @@ export default function Table({ content, headers, currentPage, setCurrentPage, t
 
   return (
     <div className="w-full">
-
-      {Object.keys(checkedItems).length > 0 && (
+      {Object.keys(checkedItems || {}).length > 0 && (
         <div className="flex items-center bg-gray-100 justify-between pt-2 pb-2 pl-8 pr-8 rounded-full mb-2 text-black font-bold">
           <span>{Object.keys(checkedItems).length} itens selecionados</span>
           <div className="flex gap-12 ">
@@ -120,7 +117,6 @@ export default function Table({ content, headers, currentPage, setCurrentPage, t
         </div>
       )}
 
-      {/* Cabeçalho fixo */}
       <table className="Table">
         <thead>
           <tr className="text-gray-200 border-b-2 border-gray-600">
@@ -129,7 +125,6 @@ export default function Table({ content, headers, currentPage, setCurrentPage, t
         </thead>
       </table>
 
-      {/* Corpo com scroll */}
       <div className="TableRowContainer overflow-y-auto max-h-[60vh] min-h-[42vh]">
         <table className="w-full table-fixed text-black border-collapse">
           <tbody>

@@ -4,29 +4,13 @@ import { BusinessContext } from "../context/BusinessContext";
 import "../components/css/pages/pages.css";
 import PageTitle from "../components/utils/PageTitle";
 import Table from "../components/table/Table";
-import ModalWithInputs from "../components/modals/ModalWithInputs";
 import Button from "../components/inputs/Button";
-import Placeholder from "../assets/placeholder.svg";
-import ModalConfirm from "../components/modals/ModalConfirm";
-import ModalSearchProduct from "../components/modals/ModalSearchProduct";
-import ModalRemoveInventory from "../components/modals/ModalRemoveInventory";
-import { useParams } from "react-router-dom";
 import ModalReceiveProducts from "../components/modals/ModalReceiveProducts";
 
 function Shipments() {
   //Auth
   const { user, setUser } = useContext(AuthContext);
   const { currentBusiness } = useContext(BusinessContext);
-
-  //Manipulate items
-  const [allInventories, setAllInventories] = useState([]);
-  const [inventoriesToExclude, setInventoriesToExclude] = useState([]);
-  const [checkedItems, setCheckedItems] = useState({});
-
-  //Transfer
-  const [transferItems, setTransferItems] = useState();
-  const [toInventory, setToInventory] = useState(undefined);
-  const [transferWindowOpen, setTransferWindowOpen] = useState(false);
 
   //Pagination
   const [content, setContent] = useState([]);
@@ -39,21 +23,8 @@ function Shipments() {
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [search, setSearch] = useState("");
 
-  //Remove Item
-  const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
-
   //Add item
   const [isModalReceiveProductOpen, setIsModalReceiveProductOpen] = useState(false);
-
-  //Add inventory
-  const [IsModalNewInventoryOpen, setIsModalNewInventoryOpen] = useState(false);
-  const [businesses, setBusinesses] = useState([]);
-
-  //Remove Inventory
-  const [isModalRemoveInventoryOpen, setIsModalRemoveInventoryOpen] = useState(false);
-
-  //Shipments
-  const { productId } = useParams();
 
   useEffect(() => {
     if (user?.token && currentBusiness != undefined) {
@@ -80,10 +51,6 @@ function Shipments() {
       getTableData();
     }
   }, [currentPage, limit, search]);
-
-  const onSearch = (search) => {
-    setSearch(search);
-  }
 
   async function getTableData() {
 
@@ -112,7 +79,6 @@ function Shipments() {
 
 
     const result = await res.json();
-
     let contentToAdd = result.shipments.map((item) => ({
       Checkbox: {
         type: "checkbox",
@@ -169,7 +135,7 @@ function Shipments() {
                   <label>Vindo de: </label>
                   <label
                     className="font-semibold"
-                  > {orderItem.inventoryFromName ?? "--"} </label>
+                  > {item.supplier || item.inventoryFromName || "--"} </label>
                 </div>
               </div>
 
@@ -185,12 +151,6 @@ function Shipments() {
   }
 
   const headers = [
-    {
-      name: "Checkbox",
-      size: "10%",
-      type: "normal",
-      checkedItems: checkedItems
-    },
     { name: "Status", size: "20%", type: "normal" },
     { name: "Type", size: "20%", type: "normal" },
     { name: "Date", size: "20%", type: "normal" },
@@ -200,179 +160,6 @@ function Shipments() {
       type: "custom",
     }
   ];
-
-  const Product = ({ product }) => {
-    const [quantity, setQuantity] = useState(() => {
-      const existing = transferItems?.[product.Checkbox.id]?.amount;
-      return typeof existing === "number" ? existing : 0;
-    });
-
-    const updateTransferItem = (newQuantity) => {
-      setTransferItems(prev => {
-        const updated = { ...prev };
-        updated[product.Checkbox.id] = {
-          product,
-          amount: newQuantity
-        };
-        return updated;
-      });
-    };
-
-    const increment = () => {
-      setQuantity(prev => {
-        const updated = Math.min(prev + 1, Number(product.Amount.text));
-        updateTransferItem(updated);
-        return updated;
-      });
-    };
-
-    const decrement = () => {
-      setQuantity(prev => {
-        const updated = Math.max(prev - 1, 0);
-        updateTransferItem(updated);
-        return updated;
-      });
-    };
-
-    return (
-      <div className="flex flex-row text-black w-full items-center justify-between pt-2">
-        <div className="flex flex-row items-center">
-          <img src={Placeholder} className="w-8" alt="placeholder" />
-          <label className="ml-2" title={`${product.Name.text} ( ${product.Inventory.text} )`}>
-            {`${product.Name.text} ( ${product.Inventory.text} )`}
-          </label>
-        </div>
-
-        <div className="flex flex-row items-center gap-1">
-          <button
-            onClick={decrement}
-            className="bg-red-300 px-2 rounded hover:bg-red-400"
-          >
-            −
-          </button>
-          <input
-            type="number"
-            value={quantity}
-            readOnly
-            className="bg-gray-200 border w-12 text-center rounded"
-          />
-          <button
-            onClick={increment}
-            className="bg-green-300 px-2 rounded hover:bg-green-400"
-          >
-            +
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  const ProductItems = () => {
-    const items = Object.keys(checkedItems).map((item, index) => (
-      <Product product={content.find(cont => cont.Checkbox.id === item)} key={index} />
-    ));
-
-    return (
-      <div className="max-h-[28vh] overflow-y-auto">
-        {items.length > 0 ? items : <p className="text-gray-500">Nenhum item selecionado</p>}
-      </div>
-    );
-  };
-
-  const transferItem = async (selectedInventory) => {
-    const inventoryId = selectedInventory ?? toInventory;
-
-    if (!inventoryId) {
-      alert("Escolha um inventário");
-      return;
-    }
-
-    if (!transferItems || Object.values(transferItems).some(item => item.amount === 0)) {
-      alert("Você não pode transferir um item com quantidade 0.");
-      return;
-    }
-
-    const orderItemsToSend = Object.values(transferItems).map((item) => {
-      return {
-        amount: item.amount,
-        productId: item.product.Checkbox.productId,
-        id: item.product.Checkbox.id,
-        toInventoryId: inventoryId,
-        fromInventoryId: item.product.Inventory.id
-      }
-    })
-
-    const requestBody = {
-      transferDtos: orderItemsToSend,
-      toInventoryId: inventoryId
-    };
-
-    const res = await fetch("https://localhost:7011/Shipment/Transfer", {
-      method: "POST",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${JSON.parse(user.token).token}`
-      }
-    });
-
-    if (!res.ok) {
-      console.error("Erro na transferência:", res.status);
-    }
-
-    setTransferWindowOpen(false);
-    setTransferItems(undefined);
-    setToInventory(undefined);
-    setCheckedItems({});
-    await getTableData();
-  };
-
-  const removeItems = async() => {
-    let inventoryIds = Object.keys(checkedItems);
-
-    const res = await fetch("https://localhost:7011/Inventory/InventoryItem/DeleteMany", {
-      method: "POST",
-      body: JSON.stringify(inventoryIds),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${JSON.parse(user.token).token}`
-      }
-    });
-
-    if (!res.ok) {
-      console.error("Erro na remover:", res.status);
-    }
-
-    setCheckedItems({});
-    setIsModalConfirmOpen(false);
-    await getTableData()
-  }
-
-  const SaveInventory= async (content) => {
-    let inventoryName = content.refs[0].value;
-    let businessId = businesses[0].id;
-
-    let body = {
-      name: inventoryName,
-      businessId: businessId
-    }
-
-    const res = await fetch("https://localhost:7011/Inventory", {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${JSON.parse(user.token).token}`
-      }
-    });
-
-    if (!res.ok) {
-      console.error("Erro na remover:", res.status);
-    }
-
-    setIsModalNewInventoryOpen(false);
-    await getTableData()
-  }
 
   return (
     <>
@@ -405,83 +192,13 @@ function Shipments() {
         </div>
       </div>
 
-      {transferWindowOpen && (
-        <ModalWithInputs
-          onClose={() => setTransferWindowOpen(false)}
-          content={{
-            title: "Transferir",
-            saveButtonText: "Transferir",
-            onSelectChange: setToInventory,
-            onButtonClick: (inputData) => transferItem(inputData.selectedDropdown),
-            inputs: [
-              {
-                name: "products",
-                type: "custom",
-                elements: ProductItems,
-              },
-              {
-                name: "inventories",
-                type: "dropdown",
-                options: allInventories.filter(
-                  (inv) => !inventoriesToExclude.includes(inv.id)
-                ),
-              },
-            ],
-          }}
-        />
-      )}
-
-      { isModalConfirmOpen &&
-        <ModalConfirm
-          onClose={() => setIsModalConfirmOpen(false)}
-          handleConfirm={async () => await removeItems()}
-          content={
-              {
-                  title: "Remover produto",
-                  subtitle: "Tem certeza que deseja remover o produto?"
-              }
-          }
-        />
-
-      }
-
       {
         isModalReceiveProductOpen &&
 
         <ModalReceiveProducts
-          title="Adicionar produto a inventário"
+          title="Receber produtos de fornecedor"
           onClose={() => setIsModalReceiveProductOpen(false)}
         />
-      }
-
-      {
-        IsModalNewInventoryOpen &&
-          <ModalWithInputs
-            onClose={() => setIsModalNewInventoryOpen(false)}
-            content={{
-              title: "Adicionar inventário",
-              saveButtonText: "Salvar",
-              onButtonClick: async (content) => await SaveInventory(content),
-              inputs: [
-                {
-                  name: "Nome do inventário",
-                  type: "normal"
-                }
-              ],
-            }}
-          />
-      }
-
-      {
-        isModalRemoveInventoryOpen &&
-          <ModalRemoveInventory
-            onClose={async () => {
-              setIsModalRemoveInventoryOpen(false);
-              setSelectedFilters([]);
-              setCurrentPage(1);
-              await getTableData();
-            }}
-          />
       }
 
     </>

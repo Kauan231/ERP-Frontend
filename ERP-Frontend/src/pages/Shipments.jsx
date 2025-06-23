@@ -135,7 +135,7 @@ function Shipments() {
                   <label>Vindo de: </label>
                   <label
                     className="font-semibold"
-                  > {item.supplier || item.inventoryFromName || "--"} </label>
+                  > {item.supplier || orderItem.inventoryFromName || "--"} </label>
                 </div>
               </div>
 

@@ -6,6 +6,7 @@ import PageTitle from "../components/utils/PageTitle";
 import Table from "../components/table/Table";
 import Button from "../components/inputs/Button";
 import ModalReceiveProducts from "../components/modals/ModalReceiveProducts";
+import ModalSendProducts from "../components/modals/ModalSendProducts";
 
 function Shipments() {
   //Auth
@@ -23,8 +24,11 @@ function Shipments() {
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [search, setSearch] = useState("");
 
-  //Add item
+  //Receive product
   const [isModalReceiveProductOpen, setIsModalReceiveProductOpen] = useState(false);
+
+  //Send product
+  const [isModalSendProductsOpen, setIsModalSendProductsOpen] = useState(false);
 
   useEffect(() => {
     if (user?.token && currentBusiness != undefined) {
@@ -50,11 +54,9 @@ function Shipments() {
     if(currentBusiness != undefined) {
       getTableData();
     }
-  }, [currentPage, limit, search]);
+  }, [currentPage, limit, search, isModalSendProductsOpen, isModalReceiveProductOpen]);
 
   async function getTableData() {
-
-
     const skip = (currentPage - 1) * limit;
     let baseUrl = `https://localhost:7011/Shipment?businessId=${currentBusiness}`;
     let skipAndLimit = `skip=${skip}&limit=${limit}`
@@ -92,6 +94,14 @@ function Shipments() {
       Type: {
         type: "label",
         text: item.type,
+      },
+      Sender: {
+        type: "label",
+        text: item.type == "RECEIVE" ? item.client : "--",
+      },
+      Receiver: {
+        type: "label",
+        text: item.type == "SEND" ? item.client : "--",
       },
       Date: {
         type: "label",
@@ -132,10 +142,16 @@ function Shipments() {
                 <div
                   className="flex flex-row gap-2"
                 >
-                  <label>Vindo de: </label>
-                  <label
-                    className="font-semibold"
-                  > {item.supplier || orderItem.inventoryFromName || "--"} </label>
+                  {
+                    item.type == "SEND" &&
+                    <>
+                    <label>Vindo de: </label>
+                    <label
+                      className="font-semibold"
+                    > { orderItem.inventoryFromName || "--"}
+                    </label>
+                    </>
+                  }
                 </div>
               </div>
 
@@ -153,6 +169,8 @@ function Shipments() {
   const headers = [
     { name: "Status", size: "20%", type: "normal" },
     { name: "Type", size: "20%", type: "normal" },
+    { name: "Sender", size: "20%", type: "normal" },
+    { name: "Receiver", size: "20%", type: "normal" },
     { name: "Date", size: "20%", type: "normal" },
     {
       name: "Items",
@@ -174,6 +192,13 @@ function Shipments() {
               <Button
                 title="Receber produtos de fornecedor"
                 onClick={() => setIsModalReceiveProductOpen(true)}
+              />
+            </div>
+
+            <div>
+              <Button
+                title="Enviar produtos"
+                onClick={() => setIsModalSendProductsOpen(true)}
               />
             </div>
 
@@ -201,6 +226,14 @@ function Shipments() {
         />
       }
 
+      {
+        isModalSendProductsOpen &&
+
+        <ModalSendProducts
+          title="Enviar produtos"
+          onClose={() => { setIsModalSendProductsOpen(false) }}
+        />
+      }
     </>
   );
 }
